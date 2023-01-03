@@ -565,6 +565,29 @@ class ReactNativeHealthkit: RCTEventEmitter {
 
 
     }
+    
+    @objc(deleteWorkoutSample:uuid:resolve:reject:)
+    func deleteWorkoutSample(typeIdentifier: String, uuid: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock){
+            guard let store = _store else {
+                return reject(INIT_ERROR, INIT_ERROR_MESSAGE, nil);
+            }
+
+            let identifier = HKWorkoutTypeIdentifier.init(rawValue: typeIdentifier);
+            let sampleUuid = UUID.init(uuidString: uuid)!;
+
+            guard let sampleType = HKObjectType.(forIdentifier: identifier) else {
+                return reject(TYPE_IDENTIFIER_ERROR, typeIdentifier, nil);
+            }
+
+            let samplePredicate = HKWorkout.predicateForObject(with: sampleUuid);
+
+            store.deleteObjects(of: sampleType, predicate: samplePredicate) { (success: Bool, deletedObjectCount: Int, error: Error?) in
+                guard let err = error else {
+                    return resolve(success);
+                }
+                reject(GENERIC_ERROR, err.localizedDescription, error);
+            }
+    }
 
     @objc(saveCategorySample:value:start:end:metadata:resolve:reject:)
     func saveCategorySample(typeIdentifier: String, value: Double, start: Date, end: Date, metadata: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock){

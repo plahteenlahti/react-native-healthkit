@@ -440,6 +440,29 @@ const DeleteQuantity = () => {
   )
 }
 
+const DeleteWorkout = () => {
+  const typeToDelete = HKQuantityTypeIdentifier.stepCount
+  const latestValue = useMostRecentQuantitySample(typeToDelete)
+
+  const deleteFn = useCallback(() => {
+    if (latestValue) {
+      void deleteQuantitySample(typeToDelete, latestValue?.uuid)
+    }
+  }, [latestValue, typeToDelete])
+
+  return (
+    <>
+      <LatestListItem
+        key={typeToDelete}
+        icon='clock'
+        title='Latest value'
+        identifier={typeToDelete}
+      />
+      <Button onPress={deleteFn}>Delete Last Value</Button>
+    </>
+  )
+}
+
 const DeleteSample = () => {
   const typeToDelete = HKQuantityTypeIdentifier.bodyMass
   const latestValue = useMostRecentQuantitySample(typeToDelete)
